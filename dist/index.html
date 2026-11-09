@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101827" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="description"
+      content="Penyiar Sunyi — satu malam siaran radio di tengah hujan. Sebuah permainan naratif yang tenang."
+    />
+    <title>Penyiar Sunyi — Sunyi FM 91,7</title>
+    <script type="module" crossorigin src="/assets/index-BDQWHpAE.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BB5B1h1E.css">
+  </head>
+  <body>
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div id="vignette" aria-hidden="true"></div>
+    <div id="grain" aria-hidden="true"></div>
+
+    <div id="stage" aria-live="polite">
+      <!-- HUD -->
+      <header id="hud" class="hud">
+        <div class="hud-station">
+          <span class="on-air" id="onAir"><i></i>ON AIR</span>
+          <span class="hud-freq">SUNYI FM <b>91,7</b></span>
+        </div>
+        <div class="hud-right">
+          <span class="hud-program">Teman Jaga</span>
+          <span class="hud-clock" id="clock">22:00</span>
+          <span class="hud-count" id="progress">01 / 08</span>
+          <button class="icon-btn" id="settingsBtn" aria-label="Pengaturan" title="Pengaturan">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.7-1.2-1.8-3.1-2 .8a7.7 7.7 0 0 0-2.6-1.5L14.4 3h-3.6l-.3 2.5a7.7 7.7 0 0 0-2.6 1.5l-2-.8L4.1 9.3l1.7 1.2a7.7 7.7 0 0 0 0 3l-1.7 1.2 1.8 3.1 2-.8a7.7 7.7 0 0 0 2.6 1.5l.3 2.5h3.6l.3-2.5a7.7 7.7 0 0 0 2.6-1.5l2 .8 1.8-3.1-1.7-1.2Z" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Title -->
+      <section id="titleScreen" class="screen title-screen">
+        <div class="title-inner">
+          <p class="eyebrow">SUNYI FM 91,7 · TEMAN JAGA</p>
+          <h1>Penyiar<br /><em>Sunyi</em></h1>
+          <p class="title-sub">
+            Satu malam siaran. Delapan pendengar.<br />
+            Hujan yang tidak minta apa-apa.
+          </p>
+          <div class="title-actions">
+            <button class="btn btn-primary" id="startBtn">Mulai Siaran</button>
+            <button class="btn btn-ghost" id="continueBtn" hidden>Lanjutkan Malam</button>
+            <button class="btn btn-ghost" id="freeBtn">Ruang Siaran Bebas</button>
+            <button class="btn btn-ghost" id="titleSettings">Pengaturan</button>
+          </div>
+          <p class="title-note">
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14a2 2 0 0 0 2 2h1v-4H6a2 2 0 0 0-2 2Zm16 0a2 2 0 0 0-2-2h-1v4h1a2 2 0 0 0 2-2Z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            Disarankan memakai headphone. Suara hujan dibuat langsung oleh browser.
+          </p>
+        </div>
+        <div class="title-foot">
+          <span>PC · Mouse &amp; keyboard</span>
+          <span>22:00 — 05:00</span>
+        </div>
+      </section>
+
+      <!-- Message / response / subtitle / reply -->
+      <section id="messagePanel" class="panel message-panel" hidden>
+        <div class="panel-head">
+          <span class="panel-tag" id="msgFrom">PESAN MASUK</span>
+          <span class="panel-time" id="msgTime">22:30</span>
+        </div>
+        <p class="message-text" id="msgText"></p>
+        <div class="panel-actions">
+          <button class="btn btn-line" id="msgNext">Lanjut <kbd>Space</kbd></button>
+        </div>
+      </section>
+
+      <section id="responsePanel" class="responses" hidden>
+        <p class="responses-label">Pilih cara menjawab · <span>1 2 3</span></p>
+        <div class="response-grid" id="responseGrid"></div>
+      </section>
+
+      <section id="replyPanel" class="panel reply-panel" hidden>
+        <div class="panel-head">
+          <span class="panel-tag" id="replyFrom">RANI</span>
+          <span class="panel-time" id="replyTime">22:44</span>
+        </div>
+        <p class="message-text reply-text" id="replyText"></p>
+        <div class="panel-actions">
+          <button class="btn btn-line" id="replyNext">Lanjut <kbd>Space</kbd></button>
+        </div>
+      </section>
+
+      <section id="subtitlePanel" class="subtitles" hidden>
+        <div class="subtitle-top">
+          <span class="sub-speaker">SUNYI</span>
+          <span class="sub-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        </div>
+        <p id="subtitleText" class="subtitle-text"></p>
+        <button class="sub-skip" id="subSkip">lewati <kbd>Space</kbd></button>
+      </section>
+
+      <!-- Cassette rack -->
+      <section id="rackPanel" class="rack" hidden>
+        <div class="rack-head">
+          <div>
+            <p class="eyebrow" id="rackEyebrow">KURASI KASET</p>
+            <h2 id="rackTitle">Pilih lagu untuk malam ini</h2>
+          </div>
+          <p class="rack-hint">Hover untuk melihat · klik untuk memutar</p>
+        </div>
+        <div class="rack-grid" id="rackGrid"></div>
+      </section>
+
+      <!-- Zen HUD -->
+      <section id="zenHud" class="zen-hud" hidden>
+        <div class="zen-now">
+          <span class="zen-led" aria-hidden="true"></span>
+          <span id="zenTitle">Diri</span>
+          <span class="zen-sep">·</span>
+          <span id="zenStyle">Tulus · Pop Akustik Mellow</span>
+          <span class="zen-time" id="zenTime"></span>
+        </div>
+        <p class="zen-hint" id="zenHint">Gerakkan mouse untuk melihat · seret fader di mixer · tekan <kbd>N</kbd> lewati lagu</p>
+        <div class="zen-deck">
+          <button class="deck-btn" id="zenSkip" type="button" aria-label="Lewati lagu">Lewati <kbd>N</kbd></button>
+          <button class="deck-btn" id="zenFf" type="button" aria-label="Maju 30 detik">Maju 30 dtk</button>
+        </div>
+        <button class="btn btn-zen" id="zenNext" hidden>Lanjut <kbd>Space</kbd></button>
+      </section>
+
+      <!-- Recap -->
+      <section id="recapScreen" class="screen recap-screen" hidden>
+        <div class="recap-head">
+          <p class="eyebrow">REKAP SIARAN · 05:00</p>
+          <h2 id="recapTitle">Malam yang pelan</h2>
+          <p class="recap-sub" id="recapSub"></p>
+        </div>
+        <div class="recap-grid" id="recapGrid"></div>
+        <div class="recap-actions">
+          <button class="btn btn-primary" id="recapAgain">Ulangi Malam</button>
+          <button class="btn btn-ghost" id="recapMenu">Kembali ke Menu</button>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settingsPanel" class="settings" hidden>
+        <div class="settings-card">
+          <div class="settings-head">
+            <h2>Pengaturan</h2>
+            <button class="icon-btn" id="settingsClose" aria-label="Tutup pengaturan">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+            </button>
+          </div>
+          <div class="setting-row">
+            <label for="volMaster">Volume utama</label>
+            <input type="range" id="volMaster" min="0" max="1" step="0.01" value="0.8" />
+          </div>
+          <div class="setting-row">
+            <label for="volMusic">Musik</label>
+            <input type="range" id="volMusic" min="0" max="1" step="0.01" value="0.8" />
+          </div>
+          <div class="setting-row">
+            <label for="volRain">Hujan</label>
+            <input type="range" id="volRain" min="0" max="1" step="0.01" value="0.8" />
+          </div>
+          <div class="setting-row">
+            <span>Teks</span>
+            <div class="seg" id="textSizeSeg">
+              <button data-v="0">Kecil</button><button data-v="1">Sedang</button><button data-v="2">Besar</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <span>Kualitas grafis</span>
+            <div class="seg" id="qualitySeg">
+              <button data-v="low">Rendah</button><button data-v="medium">Sedang</button><button data-v="high">Tinggi</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <label for="subtitleToggle">Subtitle monolog</label>
+            <input type="checkbox" id="subtitleToggle" checked />
+          </div>
+          <div class="setting-row">
+            <label for="reduceToggle">Kurangi gerak &amp; kilat</label>
+            <input type="checkbox" id="reduceToggle" />
+          </div>
+          <div class="setting-row">
+            <label for="voiceToggle">Suara penyiar (ElevenLabs / Audio)</label>
+            <input type="checkbox" id="voiceToggle" checked />
+          </div>
+          <div class="settings-foot">
+            <button class="btn btn-line" id="fullscreenBtn">Layar Penuh</button>
+            <span class="settings-version">Penyiar Sunyi · v2.1</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pause -->
+      <section id="pausePanel" class="screen pause-screen" hidden>
+        <div class="pause-inner">
+          <p class="eyebrow">SIARAN DIJEDA</p>
+          <h2>Hujan masih di luar.</h2>
+          <div class="pause-actions">
+            <button class="btn btn-primary" id="resumeBtn">Kembali ke Siaran</button>
+            <button class="btn btn-ghost" id="pauseSettings">Pengaturan</button>
+            <button class="btn btn-ghost" id="pauseMenu">Menu Utama</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="hoverTip" class="hover-tip" hidden></div>
+      <div id="toast" class="toast" hidden></div>
+    </div>
+
+    <div id="pcWarning" class="pc-warning" hidden>
+      <p class="eyebrow">SUNYI FM 91,7</p>
+      <h1>Game ini dimainkan di PC.</h1>
+      <p>Buka dengan layar minimal 1280 piksel, mouse, dan keyboard.</p>
+      <div class="pc-warning-actions">
+        <button class="btn btn-line" id="ignoreWarnBtn">Tetap Lanjutkan</button>
+      </div>
+    </div>
+
+    <div id="fade" class="fade" aria-hidden="true"></div>
+  </body>
+</html>
